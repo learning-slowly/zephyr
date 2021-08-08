@@ -102,6 +102,8 @@ void z_arm_init_arch_hw_at_boot(void)
 	z_arm_clear_arm_mpu_config();
 #endif /* CONFIG_CPU_HAS_ARM_MPU */
 
+	/* LS: armv8m 에서는 512개의 벡터를 지원함. 아래는 모든 벡터의
+	 * 인터럽트를 비활성화시키고, pending 인터럽트들을 클리어 함. */
 	/* Disable NVIC interrupts */
 	for (uint8_t i = 0; i < ARRAY_SIZE(NVIC->ICER); i++) {
 		NVIC->ICER[i] = 0xFFFFFFFF;
@@ -112,6 +114,8 @@ void z_arm_init_arch_hw_at_boot(void)
 	}
 
 #if defined(CONFIG_CPU_CORTEX_M7)
+	/* LS: M7 TRM 에 따르면, 캐시 구현은 옵셔널임. 구현되어 있는 경우,
+	 * 캐시를 비활성화하고 초기 상태로 만듬 */
 	/* Reset D-Cache settings. If the D-Cache was enabled,
 	 * SCB_DisableDCache() takes care of cleaning and invalidating it.
 	 * If it was already disabled, just call SCB_InvalidateDCache() to
