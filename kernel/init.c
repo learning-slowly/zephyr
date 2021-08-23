@@ -325,6 +325,8 @@ static char *prepare_multithreading(void)
 __boot_func
 static FUNC_NORETURN void switch_to_main_thread(char *stack_ptr)
 {
+	/* LS:
+	 * 컨텍스트 스위칭할 때 아키텍처 specific 한 swap 함수를 사용할 경우 */
 #ifdef CONFIG_ARCH_HAS_CUSTOM_SWAP_TO_MAIN
 	arch_switch_to_main_thread(&z_main_thread, stack_ptr, bg_thread_main);
 #else
@@ -430,9 +432,12 @@ FUNC_NORETURN void z_cstart(void)
 	z_dummy_thread_init(&dummy_thread);
 #endif
 	/* do any necessary initialization of static devices */
+	/* LS: 아래 초기화 함수들을 실행할 때 커널 오브젝트가 참조될 수 있기
+	 * 때문에 먼저 실행되어야 함 */
 	z_device_state_init();
 
 	/* perform basic hardware initialization */
+	/* LS: PRE_KERNEL_1, 2로 등록된 디바이스를 초기화함 */
 	z_sys_init_run_level(_SYS_INIT_LEVEL_PRE_KERNEL_1);
 	z_sys_init_run_level(_SYS_INIT_LEVEL_PRE_KERNEL_2);
 
@@ -441,10 +446,12 @@ FUNC_NORETURN void z_cstart(void)
 
 	z_early_boot_rand_get((uint8_t *)&stack_guard, sizeof(stack_guard));
 	__stack_chk_guard = stack_guard;
+	/* LS: 8비트 미는 이유는 NULL terminator를 추가하기 위한 것? */
 	__stack_chk_guard <<= 8;
 #endif	/* CONFIG_STACK_CANARIES */
 
 #ifdef CONFIG_TIMING_FUNCTIONS_NEED_AT_BOOT
+	/* LS: 벤치마킹을 위해 타이머를 초기화하고 실행시킴 */
 	timing_init();
 	timing_start();
 #endif

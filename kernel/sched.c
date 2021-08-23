@@ -343,6 +343,7 @@ void z_reset_time_slice(void)
 void k_sched_time_slice_set(int32_t slice, int prio)
 {
 	LOCKED(&sched_spinlock) {
+		/* LS: 타임 슬라이스는 스레드별이 아니라 시스템 전역으로 적용됨 */
 		_current_cpu->slice_ticks = 0;
 		slice_time = k_ms_to_ticks_ceil32(slice);
 		if (IS_ENABLED(CONFIG_TICKLESS_KERNEL) && slice > 0) {
@@ -1102,6 +1103,13 @@ void z_sched_init(void)
 #endif
 
 #ifdef CONFIG_TIMESLICING
+	/* LS: 동일 우선순위의 스레들이 서로 선점할 수 있도록 time slice를 설정.
+	 * TIMESLICE_PRIORITY 보다 높은 우선순위의 스레드에는 적용되지 않음. 즉,
+	 * cooperative 함.
+	 *
+	 * systick 핸들러에서 elapsed 된 시간만큼 time slice를 줄임. 0 이된
+	 * 경우 스케쥴링을 요청하고 새 스레드를 위해 다시 time slice 를 설정.
+	 * sys_clock_isr -> sys_clock_announce -> z_time_slice */
 	k_sched_time_slice_set(CONFIG_TIMESLICE_SIZE,
 		CONFIG_TIMESLICE_PRIORITY);
 #endif

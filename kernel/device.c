@@ -44,10 +44,16 @@ static inline void device_pm_state_init(const struct device *dev)
  */
 void z_device_state_init(void)
 {
+	/* LS: DEVICE_DEFINE() 매크로로 등록한 디바이스의 커널 오브젝트를
+	 * 초기화함 */
 	const struct device *dev = __device_start;
 
 	while (dev < __device_end) {
 		device_pm_state_init(dev);
+		/* LS:
+		 * 여러 커널 오브젝트을 특정 오브젝트 타입으로 분류해
+		 * 접근권한을 관리. 사용자 프로그램이 권한이 필요한 오브젝트에
+		 * 함부러 접근할 수 없도록 하기 위함 */
 		z_object_init(dev);
 		++dev;
 	}
@@ -79,6 +85,9 @@ void z_sys_init_run_level(int32_t level)
 	};
 	const struct init_entry *entry;
 
+	/* LS:
+	 * 각 레벨별로 여러개의 항목이 "순차적"으로 등록되어 있기 때문에
+	 * `entry < levels[level+1]`은 해당 레벨의 모든 엔트리를 의미 */
 	for (entry = levels[level]; entry < levels[level+1]; entry++) {
 		const struct device *dev = entry->dev;
 		int rc = entry->init(dev);
@@ -96,6 +105,7 @@ void z_sys_init_run_level(int32_t level)
 				}
 				dev->state->init_res = rc;
 			}
+			/* LS: TODO: 초기화가 실패하더라도 초기화됐다고 가정? */
 			dev->state->initialized = true;
 		}
 	}

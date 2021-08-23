@@ -460,12 +460,16 @@ static char *setup_thread_stack(struct k_thread *new_thread,
 	memset(stack_buf_start, 0xaa, stack_buf_size);
 #endif
 #ifdef CONFIG_STACK_SENTINEL
+	/* LS: 컨텍스트 스위칭이 일어날 때 메모리 corruption 을 체크하기 위해
+	 * sentinel 값을 비교함 */
 	/* Put the stack sentinel at the lowest 4 bytes of the stack area.
 	 * We periodically check that it's still present and kill the thread
 	 * if it isn't.
 	 */
 	*((uint32_t *)stack_buf_start) = STACK_SENTINEL;
 #endif /* CONFIG_STACK_SENTINEL */
+	/* LS: 스택 상단에 TLS 공간 확보한 뒤 TLS 데이터를 옮김. 그리고
+	 * thread->tls 에 TLS 공간 시작주소 설정 */
 #ifdef CONFIG_THREAD_LOCAL_STORAGE
 	/* TLS is always last within the stack buffer */
 	delta += arch_tls_stack_setup(new_thread, stack_ptr);
@@ -479,6 +483,7 @@ static char *setup_thread_stack(struct k_thread *new_thread,
 		(struct _thread_userspace_local_data *)(stack_ptr - delta);
 #endif
 #if CONFIG_STACK_POINTER_RANDOM
+	/* LS: 랜덤 오프셋을 추가해 스택 프레임 위치를 알기 어렵게 함 */
 	delta += random_offset(stack_buf_size);
 #endif
 	delta = ROUND_UP(delta, ARCH_STACK_PTR_ALIGN);
@@ -499,6 +504,7 @@ static char *setup_thread_stack(struct k_thread *new_thread,
 	return stack_ptr;
 }
 
+/* LS: TODO: 어디에도 참조되지 않은 이것은 무엇? */
 #define THREAD_COOKIE	0x1337C0D3
 
 /*

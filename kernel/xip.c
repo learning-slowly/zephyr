@@ -50,6 +50,9 @@ void z_data_copy(void)
 #endif	/* CONFIG_CODE_DATA_RELOCATION */
 #ifdef CONFIG_USERSPACE
 #ifdef CONFIG_STACK_CANARIES
+	/* LS: __stack_chk_guard 가 smem 과 동일한 섹션에 위치하므로 값이
+	 * 변경되지 않도록 함. 함수 진입과 탈출시 guard 값이 다르면 안되기
+	 * 때문. 다른 함수 호출을 금지하는 것도 그 때문 */
 	/* stack canary checking is active for all C functions.
 	 * __stack_chk_guard is some uninitialized value living in the
 	 * app shared memory sections. Preserve it, and don't make any

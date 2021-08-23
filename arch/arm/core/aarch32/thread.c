@@ -59,6 +59,8 @@ void arch_new_thread(struct k_thread *thread, k_thread_stack_t *stack,
 {
 	struct __basic_sf *iframe;
 
+	/* LS: 스택 마지막 지점에 MPU region alignment 만큼의 작은 영역을
+	 * 설정해 스택 오버플로우를 감지 */
 #ifdef CONFIG_MPU_STACK_GUARD
 #if defined(CONFIG_USERSPACE)
 	if (z_stack_is_user_capable(stack)) {
@@ -69,6 +71,10 @@ void arch_new_thread(struct k_thread *thread, k_thread_stack_t *stack,
 		thread->stack_info.size -= MPU_GUARD_ALIGN_AND_SIZE;
 	}
 #endif /* CONFIG_USERSPACE */
+	/* LS: lazy stacking 때문에 오버플로우를 감지 못하는 경우가 생기지
+	 * 않도록, FP 컨텍스트 만큼 guard 영역을 늘림. lazy stacking 으로 guard
+	 * 영역이 reserved 만 되고 실제로 접근되지 않아 mpu 에서 감지 못하는
+	 * 가운데 guard 를 벗어난 영역에 corruption 이 발생할 수 있음. */
 #if FP_GUARD_EXTRA_SIZE > 0
 	if ((thread->base.user_options & K_FP_REGS) != 0) {
 		/* Larger guard needed due to lazy stacking of FP regs may

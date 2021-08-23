@@ -96,14 +96,18 @@ SECTION_SUBSEC_FUNC(TEXT,_reset_section,__start)
 #if defined(CONFIG_INIT_ARCH_HW_AT_BOOT)
 #if defined(CONFIG_CPU_HAS_ARM_MPU)
     /* Disable MPU */
+/* LS: 인터럽트가 발생하면 안되므로 MPU 비활성화 */
     movs.n r0, #0
 /* LS: MPU 관련 레지스터는 1373쪽 D1.1.12 Memory Protection Unit 참고 */
     ldr r1, =_SCS_MPU_CTRL
     str r0, [r1]
+/* LS: 새로운 mpu 리전 설정이 다음 명령들에 영향을 미칠 수 있도록 dsb 사용 */
     dsb
 #endif /* CONFIG_CPU_HAS_ARM_MPU */
 /* LS: z_main_stack 메모리 배열로 선언되어 있음. 베이스 주소에 스택 사이즈를
 더함으로써 스택 최상을 가리키도록 함. 스택은 아래로 자라기 때문 */
+/* LS: 아래 C 코드로 분기하기 때문에 해당 함수에서 사용할 스택을 설정함. 나중에
+커널 idle 스레드에서 사용됨 */
     ldr r0, =z_main_stack + CONFIG_MAIN_STACK_SIZE
     msr msp, r0
 

@@ -31,11 +31,11 @@ GDATA(z_main_stack)
 
 SECTION_FUNC(TEXT, __vector_relay_handler)
 	mrs	r0, ipsr;
-	lsls	r0, r0, $0x02;
+	lsls	r0, r0, $0x02; /* LS: offset = index * 4 */
 
 	ldr	r1, =_vector_table_pointer;
 	ldr	r1, [r1];
-	adds	r1, r1, r0;
+	adds	r1, r1, r0; /* LS: r1 = addr + offset */
 	ldr	r1, [r1];
 
 	/**
