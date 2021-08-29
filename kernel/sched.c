@@ -420,6 +420,12 @@ static void update_metairq_preempt(struct k_thread *thread)
 
 static void update_cache(int preempt_ok)
 {
+    /* LS: 단일 CPU 시스템에서 커널의 레디큐 "cache" 에 실행할 다음 스레드를 유지한다.  
+     * 문맥 전환시 실행할 스레드를 선택하기 위해서 해당 "cache"에서 가져오기만 하면 된다.
+     * "cache" 사용으로 문맥 전환시 시간 지연을 줄일 수 있지 않을까?
+     * SMP 시스템에서 각각의 CPU 마다 스케쥴링이 이루어지기 때문에,
+     * 글로벌한 커널 레디큐 "cache" 사용이 필요하지 않다.
+     */
 #ifndef CONFIG_SMP
 	struct k_thread *thread = next_up();
 

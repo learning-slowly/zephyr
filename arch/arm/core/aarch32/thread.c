@@ -118,6 +118,7 @@ void arch_new_thread(struct k_thread *thread, k_thread_stack_t *stack,
 #endif /* CONFIG_COMPILER_ISA_THUMB2 */
 #endif /* CONFIG_CPU_CORTEX_M */
 
+    /* LS: 스레드 문맥 전환시 복구될 문맥을 스레드 스택에 저장한다. */
 	thread->callee_saved.psp = (uint32_t)iframe;
 	thread->arch.basepri = 0;
 
