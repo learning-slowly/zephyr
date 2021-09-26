@@ -98,6 +98,7 @@ extern "C" {
  * @return 1 if @p config_macro is defined to 1, 0 otherwise (including
  *         if @p config_macro is not defined)
  */
+/* LS: 202010919 */
 #define IS_ENABLED(config_macro) Z_IS_ENABLED1(config_macro)
 /* INTERNAL: the first pass above is just to expand any existing
  * macros, we need the macro value to be e.g. a literal "1" at
@@ -153,6 +154,7 @@ extern "C" {
  * @param _if_1_code result if @p _flag expands to 1; must be in parentheses
  * @param _else_code result otherwise; must be in parentheses
  */
+/* LS: 20210919 */
 #define COND_CODE_1(_flag, _if_1_code, _else_code) \
 	Z_COND_CODE_1(_flag, _if_1_code, _else_code)
 
@@ -553,6 +555,7 @@ extern "C" {
  * @param ... List of arguments
  * @return  Number of variadic arguments in the argument list, minus one
  */
+/* LS: 20210919 */
 #define NUM_VA_ARGS_LESS_1(...) \
 	NUM_VA_ARGS_LESS_1_IMPL(__VA_ARGS__, 63, 62, 61, \
 	60, 59, 58, 57, 56, 55, 54, 53, 52, 51,		 \
@@ -581,6 +584,10 @@ extern "C" {
  *            arguments. (The macro should take exactly one argument.)
  * @return The results of expanding the macro on each argument, all pasted
  *         together
+ */
+/* LS: 20210919 */
+/* LS: adc_stm32.c --> DEVICE_DT_INST_DEFINE
+ * #define MACRO_MAP_CAT(...) MACRO_MAP_CAT_N( 0, __VA_ARGS__)
  */
 #define MACRO_MAP_CAT(...) MACRO_MAP_CAT_(__VA_ARGS__)
 

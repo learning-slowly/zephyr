@@ -22,6 +22,10 @@
  * @param node_id Node identifier
  * @return the node's dependency ordinal as an integer literal
  */
+/* LS: 20210919 */
+/*
+ * #define DT_DEP_ORD(node_id) node_id ## _ORD
+ */
 #define DT_DEP_ORD(node_id) DT_CAT(node_id, _ORD)
 
 /**
@@ -41,6 +45,7 @@
  * @return a list of dependency ordinals, with each ordinal followed
  *         by a comma (<tt>,</tt>), or an empty expansion
  */
+/* LS: 20210919 */
 #define DT_REQUIRES_DEP_ORDS(node_id) DT_CAT(node_id, _REQUIRES_ORDS)
 
 /**

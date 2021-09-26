@@ -302,6 +302,7 @@
  * @return node identifier for the node with that instance number and
  *         compatible
  */
+/* LS : 20210919 */
 #define DT_INST(inst, compat) UTIL_CAT(DT_N_INST, DT_DASH(inst, compat))
 
 /**
@@ -637,6 +638,7 @@
  * @param default_value a fallback value to expand to
  * @return the property's value or default_value
  */
+/* LS: 20210919 */
 #define DT_PROP_OR(node_id, prop, default_value) \
 	COND_CODE_1(DT_NODE_HAS_PROP(node_id, prop), \
 		    (DT_PROP(node_id, prop)), (default_value))
@@ -1846,6 +1848,10 @@
  * @param prop lowercase-and-underscores property name
  * @return 1 if the node has the property, 0 otherwise.
  */
+/* LS: 20210919 */
+/*
+ * node_id ## _P_ ## prop ## _EXISTS
+ */
 #define DT_NODE_HAS_PROP(node_id, prop) \
 	IS_ENABLED(DT_CAT(node_id, _P_##prop##_EXISTS))
 
@@ -1971,6 +1977,7 @@
  * @return a node identifier for the node with DT_DRV_COMPAT compatible and
  *         instance number "inst"
  */
+/* LS : 20210919 */
 #define DT_DRV_INST(inst) DT_INST(inst, DT_DRV_COMPAT)
 
 /**
@@ -2389,6 +2396,8 @@
  * @param fn Macro to call for each enabled node. Must accept an
  *           instance number as its only parameter.
  */
+/* LS: 20210919 */
+/* TODO: next */
 #define DT_INST_FOREACH_STATUS_OKAY(fn) \
 	COND_CODE_1(DT_HAS_COMPAT_STATUS_OKAY(DT_DRV_COMPAT),	\
 		    (UTIL_CAT(DT_FOREACH_OKAY_INST_,		\
@@ -2554,6 +2563,10 @@
  */
 
 /** @internal helper for node identifier macros to expand args */
+/* LS: 20210919 */
+/*
+ * #define MACRO_MAP_CAT(DT_DASH_PREFIX, __VA_ARGS__) MACRO_MAP_CAT_N( 0, __VA_ARGS__)
+ */
 #define DT_DASH(...) MACRO_MAP_CAT(DT_DASH_PREFIX, __VA_ARGS__)
 /** @internal helper for DT_DASH(): prepends _ to a name */
 #define DT_DASH_PREFIX(name) _##name

@@ -151,6 +151,7 @@ typedef int16_t device_handle_t;
  *
  * @param node_id The devicetree node identifier.
  */
+/* LS: 20210919 */
 #define DEVICE_DT_NAME(node_id) \
 	DT_PROP_OR(node_id, label, DT_NODE_FULL_NAME(node_id))
 
@@ -191,6 +192,10 @@ typedef int16_t device_handle_t;
  * @param api_ptr Provides an initial pointer to the API function struct
  * used by the driver. Can be NULL.
  */
+/* LS: 20210919 */
+/*
+ * Z_DEVICE_DT_DEV_NAME(node_id) ==> dts_ord_ ## node_id ## _ORD
+ */
 #define DEVICE_DT_DEFINE(node_id, init_fn, pm_control_fn,		\
 			 data_ptr, cfg_ptr, level, prio,		\
 			 api_ptr, ...)					\
@@ -209,6 +214,15 @@ typedef int16_t device_handle_t;
  * <tt>DT_DRV_COMPAT(inst)</tt> in the call to DEVICE_DT_DEFINE.
  *
  * @param ... other parameters as expected by DEVICE_DT_DEFINE.
+ */
+/* LS: 20210919 */
+/*
+   ref : adc_stm32.c
+   DEVICE_DT_INST_DEFINE(index,						\
+		    &adc_stm32_init, NULL,				\
+		    &adc_stm32_data_##index, &adc_stm32_cfg_##index,	\
+		    POST_KERNEL, CONFIG_KERNEL_INIT_PRIORITY_DEFAULT,	\
+		    &api_stm32_driver_api);
  */
 #define DEVICE_DT_INST_DEFINE(inst, ...) \
 	DEVICE_DT_DEFINE(DT_DRV_INST(inst), __VA_ARGS__)
@@ -338,6 +352,10 @@ typedef int16_t device_handle_t;
  * kernel driver infrastructure and driver access functions are
  * responsible for ensuring that any non-zero initialization is done
  * before they are accessed.
+ */
+/* LS: 20210919 */
+/*
+ * init_res : 초기화 결과값
  */
 struct device_state {
 	/** Non-negative result of initializing the device.
@@ -624,16 +642,30 @@ static inline bool device_is_ready(const struct device *dev)
  * format of this conversion changes, gen_defines should be updated to
  * match it.
  */
+/* LS : 20210919 */
+/*
+ * #define Z_DEVICE_DT_DEV_NAME(node_id) dts_ord_ ## DT_DEP_ORD(node_id)
+ * #define Z_DEVICE_DT_DEV_NAME(node_id) dts_ord_ ## node_id ## _ORD
+ */
 #define Z_DEVICE_DT_DEV_NAME(node_id) _CONCAT(dts_ord_, DT_DEP_ORD(node_id))
 
 /* Synthesize a unique name for the device state associated with
  * dev_name.
+ */
+/* LS: 20210919 */
+/* 
+ * #define Z_DEVICE_STATE_NAME(dev_name) __devstate_ ## dev_name 
  */
 #define Z_DEVICE_STATE_NAME(dev_name) _CONCAT(__devstate_, dev_name)
 
 /** Synthesize the name of the object that holds device ordinal and
  * dependency data.  If the object doesn't come from a devicetree
  * node, use dev_name.
+ */
+
+/* LS: 20210919 */
+/*
+ * ( __devicehdl_ ## node_id ) or ( __devicehdl_ ## dev_name )
  */
 #define Z_DEVICE_HANDLE_NAME(node_id, dev_name)				\
 	_CONCAT(__devicehdl_,						\
@@ -662,6 +694,7 @@ static inline bool device_is_ready(const struct device *dev)
 /* Construct objects that are referenced from struct device.  These
  * include power management and dependency handles.
  */
+/* LS: 20210919 */
 #define Z_DEVICE_DEFINE_PRE(node_id, dev_name, ...)			\
 	Z_DEVICE_DEFINE_HANDLES(node_id, dev_name, __VA_ARGS__)		\
 	Z_DEVICE_DEFINE_PM_SLOT(dev_name)
@@ -686,6 +719,19 @@ static inline bool device_is_ready(const struct device *dev)
  * `gen_handles.py` must be updated.
  */
 BUILD_ASSERT(sizeof(device_handle_t) == 2, "fix the linker scripts");
+
+/* LS: 20210919 */
+/*
+ * Z_DEVICE_HANDLE_NAME ==> ( __devicehdl_ ## node_id ) or ( __devicehdl_ ## dev_name )
+ *
+ * device_handle_t ==> int16_t
+ * 
+ * __weak__ : https://engineering-agit.tistory.com/25
+ * 
+ * DT_DEP_ORD           ==> node_id ## _ORD
+ * DT_REQUIRES_DEP_ORDS ==> node_id ## _REQUIRES_ORDS
+ */
+/* LS: 20210919 - END */
 #define Z_DEVICE_DEFINE_HANDLES(node_id, dev_name, ...)			\
 	extern const device_handle_t					\
 		Z_DEVICE_HANDLE_NAME(node_id, dev_name)[];		\
@@ -712,6 +758,7 @@ BUILD_ASSERT(sizeof(device_handle_t) == 2, "fix the linker scripts");
 /* Like DEVICE_DEFINE but takes a node_id AND a dev_name, and trailing
  * dependency handles that come from outside devicetree.
  */
+/* LS: 20210919 */
 #define Z_DEVICE_DEFINE(node_id, dev_name, drv_name, init_fn, pm_control_fn, \
 			data_ptr, cfg_ptr, level, prio, api_ptr, ...)	\
 	static struct device_state Z_DEVICE_STATE_NAME(dev_name);	\

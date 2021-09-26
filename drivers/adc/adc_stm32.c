@@ -936,6 +936,8 @@ static const struct adc_driver_api api_stm32_driver_api = {
 #endif
 };
 
+/* LS: 20210919 - START */
+/* DEVICE_DT_INST_DEFINE 전처리 부터 시작 */
 #define STM32_ADC_INIT(index)						\
 									\
 static void adc_stm32_cfg_func_##index(void);				\

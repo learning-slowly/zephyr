@@ -25,6 +25,7 @@
  *   ENABLED:   Z_IS_ENABLED2(_XXXX1)
  *   DISABLED   Z_IS_ENABLED2(_XXXX)
  */
+/* LS: 20210919 */
 #define Z_IS_ENABLED1(config_macro) Z_IS_ENABLED2(_XXXX##config_macro)
 
 /* Here's the core trick, we map "_XXXX1" to "_YYYY," (i.e. a string
@@ -50,6 +51,22 @@
 #define Z_IS_ENABLED3(ignore_this, val, ...) val
 
 /* Used internally by COND_CODE_1 and COND_CODE_0. */
+/* LS: 20210919 */
+/*
+   1. 참일 경우 : 
+	COND_CODE_1(1, ("true"), ("false"))
+	Z_COND_CODE_1(1, "true", "false")
+	__COND_CODE(_XXXX1, "true", "false")
+	__GET_ARG2_DEBRAKET(_YYYY, "true", "false")
+	__DEBRACKET "true"
+
+   2. false 일 경우 :
+	COND_CODE_1(0, ("true"), ("false"))
+	Z_COND_CODE_1(0, "true", "false")
+	__COND_CODE(_XXXX0, "true", "false")
+	__GET_ARG2_DEBRAKET(_XXXX0 "true", "false")
+	__DEBRACKET "false"
+ */ 
 #define Z_COND_CODE_1(_flag, _if_1_code, _else_code) \
 	__COND_CODE(_XXXX##_flag, _if_1_code, _else_code)
 #define Z_COND_CODE_0(_flag, _if_0_code, _else_code) \
@@ -97,6 +114,8 @@
 #define UTIL_REPEAT(...) UTIL_LISTIFY(__VA_ARGS__)
 
 /* Implementation details for NUM_VA_ARGS_LESS_1 */
+/* LS: 20210919 */
+/* TODO: N의 의미 ? */
 #define NUM_VA_ARGS_LESS_1_IMPL(				\
 	_ignored,						\
 	_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10,		\
@@ -108,6 +127,10 @@
 	_61, _62, N, ...) N
 
 /* Used by MACRO_MAP_CAT */
+/* LS: 20210919 */
+/* LS: adc_stm32.c --> DEVICE_DT_INST_DEFINE
+ * #define MACRO_MAP_CAT_(...) MACRO_MAP_CAT_N( 0, __VA_ARGS__)
+ */
 #define MACRO_MAP_CAT_(...)						\
 	/* To make sure it works also for 2 arguments in total */	\
 	MACRO_MAP_CAT_N(NUM_VA_ARGS_LESS_1(__VA_ARGS__), __VA_ARGS__)
