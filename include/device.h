@@ -151,7 +151,17 @@ typedef int16_t device_handle_t;
  *
  * @param node_id The devicetree node identifier.
  */
-/* LS: 20210919 */
+
+
+/* LS: 20210919
+ * DT_NODE_FULL_NAME(node_id) => DT_N_INST_0_st_stm32_adc_FULL_NAME or
+ * 
+ * devicetree_unfixed.h
+ * => #define DT_N_INST_0_st_stm32_adc  DT_N_S_soc_S_adc_40012400
+ * => #define DT_N_S_soc_S_adc_40012400_P_label "ADC_1"
+*/
+
+
 #define DEVICE_DT_NAME(node_id) \
 	DT_PROP_OR(node_id, label, DT_NODE_FULL_NAME(node_id))
 
@@ -192,9 +202,11 @@ typedef int16_t device_handle_t;
  * @param api_ptr Provides an initial pointer to the API function struct
  * used by the driver. Can be NULL.
  */
-/* LS: 20210919 */
+/* LS: */
 /*
- * Z_DEVICE_DT_DEV_NAME(node_id) ==> dts_ord_ ## node_id ## _ORD
+ * node_id : DT_N_INST_0_st_stm32_adc
+ * Z_DEVICE_DT_DEV_NAME(node_id) ==> dts_ord_ ## node_id ## _ORD => dts_ord_ ## DT_N_INST_0_st_stm32_adc_ORD => dts_ord_13
+ * DEVICE_DT_NAME(node_id) => DT_N_S_soc_S_adc_40012400_P_label => "ADC_1"
  */
 #define DEVICE_DT_DEFINE(node_id, init_fn, pm_control_fn,		\
 			 data_ptr, cfg_ptr, level, prio,		\
@@ -646,6 +658,10 @@ static inline bool device_is_ready(const struct device *dev)
 /*
  * #define Z_DEVICE_DT_DEV_NAME(node_id) dts_ord_ ## DT_DEP_ORD(node_id)
  * #define Z_DEVICE_DT_DEV_NAME(node_id) dts_ord_ ## node_id ## _ORD
+ *
+ * LS : dts_ord_DT_N_INST_0_st_stm32_adc_ORD
+ * DT_DEP_ORD(node_id) => #define DT_N_S_soc_S_adc_40012400_ORD 13
+ * Z_DEVICE_DT_DEV_NAME(node_id) => dts_ord_13
  */
 #define Z_DEVICE_DT_DEV_NAME(node_id) _CONCAT(dts_ord_, DT_DEP_ORD(node_id))
 
@@ -666,6 +682,7 @@ static inline bool device_is_ready(const struct device *dev)
 /* LS: 20210919 */
 /*
  * ( __devicehdl_ ## node_id ) or ( __devicehdl_ ## dev_name )
+ * => __devicehdl_DT_N_INST_0_st_stm32_adc
  */
 #define Z_DEVICE_HANDLE_NAME(node_id, dev_name)				\
 	_CONCAT(__devicehdl_,						\
@@ -740,15 +757,21 @@ BUILD_ASSERT(sizeof(device_handle_t) == 2, "fix the linker scripts");
 	__attribute__((__weak__,					\
 		       __section__(".__device_handles_pass1")))		\
 	Z_DEVICE_HANDLE_NAME(node_id, dev_name)[] = {			\
+/*\
+   LS: \
+#define DT_N_S_zephyr_user_REQUIRES_ORDS \
+   0,  \
+   13, soc/adc@40012400\
+*/\
 	COND_CODE_1(DT_NODE_EXISTS(node_id), (				\
 			DT_DEP_ORD(node_id),				\
 			DT_REQUIRES_DEP_ORDS(node_id)			\
 		), (							\
 			DEVICE_HANDLE_NULL,				\
 		))							\
-			DEVICE_HANDLE_SEP,				\
+			DEVICE_HANDLE_SEP, /* 7fff -1 => -32767 */				\
 			Z_DEVICE_EXTRA_HANDLES(__VA_ARGS__)		\
-			DEVICE_HANDLE_ENDS,				\
+			DEVICE_HANDLE_ENDS, /* 0x7fff */				\
 		};
 
 #define Z_DEVICE_DEFINE_INIT(node_id, dev_name, pm_control_fn)		\
@@ -758,14 +781,22 @@ BUILD_ASSERT(sizeof(device_handle_t) == 2, "fix the linker scripts");
 /* Like DEVICE_DEFINE but takes a node_id AND a dev_name, and trailing
  * dependency handles that come from outside devicetree.
  */
-/* LS: 20210919 */
+/* LS: 
+ * node_id : DT_N_INST_0_st_stm32_adc
+ * dev_name : dts_ord_13
+ *
+*/
+
+
 #define Z_DEVICE_DEFINE(node_id, dev_name, drv_name, init_fn, pm_control_fn, \
 			data_ptr, cfg_ptr, level, prio, api_ptr, ...)	\
+            /*device_state =>  __devstate_dts_ord_13 */ \
 	static struct device_state Z_DEVICE_STATE_NAME(dev_name);	\
 	Z_DEVICE_DEFINE_PRE(node_id, dev_name, __VA_ARGS__)		\
 	COND_CODE_1(DT_NODE_EXISTS(node_id), (), (static))		\
 		const Z_DECL_ALIGN(struct device)			\
 		DEVICE_NAME_GET(dev_name) __used			\
+   /* .z_device_POST_KERNEL40_ */ \
 	__attribute__((__section__(".z_device_" #level STRINGIFY(prio)"_"))) = { \
 		.name = drv_name,					\
 		.config = (cfg_ptr),					\

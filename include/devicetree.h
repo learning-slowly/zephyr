@@ -303,6 +303,7 @@
  *         compatible
  */
 /* LS : 20210919 */
+/* DT_N_INST_0_st_stm32_adc */
 #define DT_INST(inst, compat) UTIL_CAT(DT_N_INST, DT_DASH(inst, compat))
 
 /**
@@ -639,6 +640,9 @@
  * @return the property's value or default_value
  */
 /* LS: 20210919 */
+/* DT_NODE_HAS_PROP(node_id, prop) => DT_N_S_soc_S_adc_40012400_P_label_EXISTS
+ * DT_PROP(node_id, prop) => DT_N_S_soc_S_adc_40012400_P_label
+*/
 #define DT_PROP_OR(node_id, prop, default_value) \
 	COND_CODE_1(DT_NODE_HAS_PROP(node_id, prop), \
 		    (DT_PROP(node_id, prop)), (default_value))
@@ -1851,6 +1855,11 @@
 /* LS: 20210919 */
 /*
  * node_id ## _P_ ## prop ## _EXISTS
+ *
+ * DT_N_INST_0_st_stm32_adc_P_label_EXISTS
+ * => #define DT_N_INST_0_st_stm32_adc  DT_N_S_soc_S_adc_40012400
+ * => #define DT_N_S_soc_S_adc_40012400_P_label "ADC_1"
+ * => #define DT_N_S_soc_S_adc_40012400_P_label_EXISTS 1
  */
 #define DT_NODE_HAS_PROP(node_id, prop) \
 	IS_ENABLED(DT_CAT(node_id, _P_##prop##_EXISTS))
@@ -1978,6 +1987,7 @@
  *         instance number "inst"
  */
 /* LS : 20210919 */
+/* LS : 0, st_stm32_adc */
 #define DT_DRV_INST(inst) DT_INST(inst, DT_DRV_COMPAT)
 
 /**
@@ -2398,6 +2408,7 @@
  */
 /* LS: 20210919 */
 /* TODO: next */
+/* LS: COND_CODE_1(DT_COMPAT_HAS_OKAY_st_stm32_adc, DT_FOREACH_OKAY_INST_st_stm32_adc(fn), ()) */
 #define DT_INST_FOREACH_STATUS_OKAY(fn) \
 	COND_CODE_1(DT_HAS_COMPAT_STATUS_OKAY(DT_DRV_COMPAT),	\
 		    (UTIL_CAT(DT_FOREACH_OKAY_INST_,		\
