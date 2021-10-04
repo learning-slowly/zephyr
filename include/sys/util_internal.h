@@ -131,6 +131,9 @@
 /* LS: adc_stm32.c --> DEVICE_DT_INST_DEFINE
  * #define MACRO_MAP_CAT_(...) MACRO_MAP_CAT_N( 0, __VA_ARGS__)
  */
+
+/* MACRO_MAP_CAT(2, st_stm32_adc, 0) */
+
 #define MACRO_MAP_CAT_(...)						\
 	/* To make sure it works also for 2 arguments in total */	\
 	MACRO_MAP_CAT_N(NUM_VA_ARGS_LESS_1(__VA_ARGS__), __VA_ARGS__)
