@@ -55,6 +55,14 @@
  * @param i index of soc_gpio_pinctrl element
  * @return pinmux property value
  */
+/* LS: ST_STM32_DT_INST_NODE_ID_FROM_PINCTRL(13, 0, 0)
+    -> DT_INST_PHANDLE_BY_IDX(13, pinctrl_0, 0)
+    -> DT_N_S_soc_S_adc_40012400_P_pinctrl_0_IDX_0_PH
+    -> DT_N_S_soc_S_pin_controller_50000000_S_adc_in0_pa0
+
+    DT_PROP(DT_N_S_soc_S_pin_controller_50000000_S_adc_in0_pa0, pinmux)
+    -> DT_N_S_soc_S_pin_controller_50000000_S_adc_in0_pa0_P_pinmux -> 16
+*/
 #define ST_STM32_DT_INST_PINMUX(inst, x, i) \
 	DT_PROP(ST_STM32_DT_INST_NODE_ID_FROM_PINCTRL(inst, x, i), pinmux)
 
@@ -130,6 +138,9 @@
  * @param inst device instance number
  * @return pincfg field
  */
+/* LS: ST_STM32_DT_INST_PINCFG(13, 0, 0)
+    ->
+*/
 #ifndef CONFIG_SOC_SERIES_STM32F1X
 #define ST_STM32_DT_INST_PINCFG(inst, x, i)				       \
 	(((STM32_NO_PULL * ST_STM32_DT_INST_FUNC(inst, x, i, bias_disable))    \
@@ -206,6 +217,7 @@
  * @param inst device instance number
  * @return soc_gpio_pinctrl element
  */
+/* LS: ST_STM32_DT_INST_PINCTRL의 UTIL_LISTIFY를 통해 호출되는 함수 */
 #define ST_STM32_DT_INST_PIN_ELEM(i, x, inst)			\
 	{							\
 		ST_STM32_DT_INST_PINMUX(inst, x, i),		\
@@ -238,6 +250,10 @@
  * @param x index of targeted pinctrl- property (eg: pinctrl-<x>)
  * @return number of element in property
  */
+/* LS: ST_STM32_DT_INST_NUM_PINS(13, 0)
+    DT_INST_PROP_LEN(13, pinctrl_0) -> DT_PROP_LEN(DT_DRV_INST(13), pinctrl_0)
+    DT_N_S_soc_S_adc_40012400_P_pinctrl_0_LEN -> 1
+*/
 #define ST_STM32_DT_INST_NUM_PINS(inst, x) DT_INST_PROP_LEN(inst, pinctrl_##x)
 
 /**
@@ -265,6 +281,19 @@
  * @param x index of targeted pinctrl- property (eg: pinctrl-<x>)
  * @return array of soc_gpio_pinctrl
  */
+/* LS: ST_STM32_DT_INST_PINCTRL(index, 0) ->
+    DT_N_S_soc_S_adc_40012400_P_pinctrl_0_EXISTS -> 1 (devicetree_unfixed.h)
+
+    ST_STM32_DT_INST_NUM_PINS(13, 0) -> 1 (devicetree_unfixed.h)
+
+    UTIL_LISTIFY(1, ST_STM32_DT_INST_PIN_ELEM, 0, 13)
+    -> Z_UTIL_LISTIFY_1(ST_STM32_DT_INST_PIN_ELEM, 0, 13)
+    -> ST_STM32_DT_INST_PIN_ELEM(0, 0, 13)
+    -> {
+        DT_N_S_soc_S_pin_controller_50000000_S_adc_in0_pa0_P_pinmux
+        ST_STM32_DT_INST_PINCFG(0, 0, 13) -> ?
+    }
+*/
 #define ST_STM32_DT_INST_PINCTRL(inst, x)				\
 	{ COND_CODE_1(DT_INST_NODE_HAS_PROP(inst, pinctrl_##x),		\
 		      (UTIL_LISTIFY(ST_STM32_DT_INST_NUM_PINS(inst, x),	\

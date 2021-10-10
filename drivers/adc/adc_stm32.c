@@ -714,13 +714,35 @@ static int adc_stm32_channel_setup(const struct device *dev,
 static int adc_stm32_init(const struct device *dev)
 {
 	struct adc_stm32_data *data = dev->data;
+    /*
+    LS: adc_stm32_cfg는 아래 962번 라인에서 확인가능
+    */
 	const struct adc_stm32_cfg *config = dev->config;
+    /* LS:
+        STM32_CLOCK_CONTROL_NODE -> DT_NODELABEL(rcc)
+        -> DT_CAT(DT_N_NODELABEL_, rcc) -> DT_N_NODELABEL_rcc
+        -> DT_N_S_soc_S_rcc_40021000 (defined in devicetree_unfixed.h)
+
+        DEVICE_DT_GET(DT_N_S_soc_S_rcc_40021000) -> &__device_dts_ord_10
+        (device_extern.h) extern const struct device DEVICE_DT_NAME_GET(DT_N_S_soc_S_rcc_40021000);
+        DEVICE_DT_NAME_GET은 구조체를 가져오고, DEVICE_DT_GET는 그 포인터를 받아와 device *clk에 대입.
+        (drivers/clock_control/clock_stm32_ll_common.c)에 __device_dts_ord_10 실제 정의가 있음.
+    */
 	const struct device *clk = DEVICE_DT_GET(STM32_CLOCK_CONTROL_NODE);
+    /* LS: config->base -> DT_INST_REG_ADDR(index)
+
+        DT_INST_REG_ADDR(13) -> DT_INST_REG_ADDR_BY_IDX(13, 0)
+        -> DT_REG_ADDR_BY_IDX(DT_DRV_INST(13), 0) ->
+        -> DT_CAT(node_id, _REG_IDX_0_VAL_ADDRESS)
+        -> DT_N_S_soc_S_adc_40012400_REG_IDX_0_VAL_ADDRESS
+        -> 1073816576 == 0x40012400 (defined in in devicetree_unfixed.h)
+    */
 	ADC_TypeDef *adc = (ADC_TypeDef *)config->base;
 	int err;
 
 	LOG_DBG("Initializing....");
 
+    /* LS: data->dev에 dev를 대입. adc_stm32_data를 void *타입의 opaque pointer로 전달하기 위함 */
 	data->dev = dev;
 #if defined(CONFIG_SOC_SERIES_STM32F0X) || \
 	defined(CONFIG_SOC_SERIES_STM32G0X) || \
@@ -736,11 +758,22 @@ static int adc_stm32_init(const struct device *dev)
 #endif
 
 	if (clock_control_on(clk,
+        /* LS: .config->pclken = {
+            .enr = DT_INST_CLOCKS_CELL(index, bits),
+            .bus = DT_INST_CLOCKS_CELL(index, bus),
+            },
+            config->pclken.enr -> DT_N_S_soc_S_adc_40012400_P_clocks_IDX_0_VAL_bits -> 512
+            config->pclken.bus -> DT_N_S_soc_S_adc_40012400_P_clocks_IDX_0_VAL_bus -> 3
+        */
 		(clock_control_subsys_t *) &config->pclken) != 0) {
 		return -EIO;
 	}
 
 	/* Configure dt provided device signals when available */
+    /* LS: config->pinctrl => adc_pins_13
+    -> ST_STM32_DT_INST_PINCTRL(index, 0)
+    -> {{13, }}
+    */
 	err = stm32_dt_pinctrl_configure(config->pinctrl,
 					 config->pinctrl_len,
 					 (uint32_t)config->base);
@@ -942,6 +975,13 @@ static const struct adc_driver_api api_stm32_driver_api = {
 									\
 static void adc_stm32_cfg_func_##index(void);				\
 									\
+/* LS: ST_STM32_DT_INST_PINCTRL(13, 0)
+    COND_CODE_1로 DT_N_S_soc_S_adc_40012400_P_pinctrl_0_EXISTS를 체크하고
+    UTIL_LISTIFY를 통해 {
+		ST_STM32_DT_INST_PINMUX(13, 0, 0),
+		ST_STM32_DT_INST_PINCFG(13, 0, 0),
+	} 로 initialzer를 만듬.
+*/ \
 static const struct soc_gpio_pinctrl adc_pins_##index[] =		\
 	ST_STM32_DT_INST_PINCTRL(index, 0);				\
 									\

@@ -255,6 +255,10 @@ typedef int16_t device_handle_t;
  * @return The expanded name of the device object created by
  * DEVICE_DT_DEFINE()
  */
+/* LS:
+ * Z_DEVICE_DT_DEV_NAME(DT_N_S_soc_S_rcc_40021000) -> dts_ord_10
+ * DEVICE_NAME_GET(dts_ord_10) -> __device_dts_ord_10
+ */
 #define DEVICE_DT_NAME_GET(node_id) DEVICE_NAME_GET(Z_DEVICE_DT_DEV_NAME(node_id))
 
 /**
@@ -269,6 +273,7 @@ typedef int16_t device_handle_t;
  *
  * @return A pointer to the device object created by DEVICE_DT_DEFINE()
  */
+/* LS: node_id = DT_N_S_soc_S_rcc_40021000 (STM32_CLOCK_CONTROL_NODE) @ref stm32_clock_control.h */
 #define DEVICE_DT_GET(node_id) (&DEVICE_DT_NAME_GET(node_id))
 
 /** @def DEVICE_DT_INST_GET
@@ -662,6 +667,10 @@ static inline bool device_is_ready(const struct device *dev)
  * LS : dts_ord_DT_N_INST_0_st_stm32_adc_ORD
  * DT_DEP_ORD(node_id) => #define DT_N_S_soc_S_adc_40012400_ORD 13
  * Z_DEVICE_DT_DEV_NAME(node_id) => dts_ord_13
+ *
+ * LS: from DEVICE_DT_NAME_GET(node_id)
+ * #define DT_N_S_soc_S_rcc_40021000_ORD 10
+ * Z_DEVICE_DT_DEV_NAME(DT_N_S_soc_S_rcc_40021000) => dts_ord_10
  */
 #define Z_DEVICE_DT_DEV_NAME(node_id) _CONCAT(dts_ord_, DT_DEP_ORD(node_id))
 

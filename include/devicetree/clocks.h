@@ -198,6 +198,9 @@ extern "C" {
  * @return the cell value at index "idx"
  * @see DT_PHA_BY_IDX()
  */
+/* LS:
+    DT_PHA_BY_IDX(DT_N_S_soc_S_adc_40012400, clocks, 0, cell)
+*/
 #define DT_CLOCKS_CELL_BY_IDX(node_id, idx, cell) \
 	DT_PHA_BY_IDX(node_id, clocks, idx, cell)
 
@@ -324,6 +327,10 @@ extern "C" {
  * @return the cell value at index "idx"
  * @see DT_CLOCKS_CELL_BY_IDX()
  */
+/* LS:
+    DT_CLOCKS_CELL_BY_IDX(DT_N_S_soc_S_adc_40012400, 0, cell)
+    cell은 bits 혹은 bus
+*/
 #define DT_INST_CLOCKS_CELL_BY_IDX(inst, idx, cell) \
 	DT_CLOCKS_CELL_BY_IDX(DT_DRV_INST(inst), idx, cell)
 

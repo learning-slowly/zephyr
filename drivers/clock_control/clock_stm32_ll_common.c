@@ -722,6 +722,7 @@ int stm32_clock_control_init(const struct device *dev)
  * @brief RCC device, note that priority is intentionally set to 1 so
  * that the device init runs just after SOC init
  */
+/* LS: DT_NODELABEL(rcc) == STM32_CLOCK_CONTROL_NODE (line 16) */
 DEVICE_DT_DEFINE(DT_NODELABEL(rcc),
 		    &stm32_clock_control_init,
 		    NULL,

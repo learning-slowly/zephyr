@@ -13,6 +13,7 @@
 #include <dt-bindings/clock/stm32_clock.h>
 
 /* common clock control device node for all STM32 chips */
+/* LS: DT_NODELABEL(rcc) -> DT_N_NODELABEL_rcc -> DT_N_S_soc_S_rcc_40021000 */
 #define STM32_CLOCK_CONTROL_NODE DT_NODELABEL(rcc)
 
 /*

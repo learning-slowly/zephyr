@@ -1077,6 +1077,11 @@
  *             at "pha" index "idx"
  * @return the cell's value
  */
+/* LS:
+    DT_PHA_BY_IDX(DT_N_S_soc_S_adc_40012400, clocks, 0, cell)
+    -> DT_N_S_soc_S_adc_40012400_P_clocks_IDX_0_VAL_bus -> 3 (devicetree_unfixed.h)
+    -> DT_N_S_soc_S_adc_40012400_P_clocks_IDX_0_VAL_bits -> 512
+*/
 #define DT_PHA_BY_IDX(node_id, pha, idx, cell) \
 	DT_PROP(node_id, pha##_IDX_##idx##_VAL_##cell)
 
@@ -1986,8 +1991,9 @@
  * @return a node identifier for the node with DT_DRV_COMPAT compatible and
  *         instance number "inst"
  */
-/* LS : 20210919 */
-/* LS : 0, st_stm32_adc */
+/* LS : DT_INST(0, st_stm32_adc)
+ * => DT_N_INST_0_st_stm32_adc => DT_N_S_soc_S_adc_40012400
+ */
 #define DT_DRV_INST(inst) DT_INST(inst, DT_DRV_COMPAT)
 
 /**
@@ -2249,6 +2255,7 @@
  * @param inst instance number
  * @return instance's register block address
  */
+/* LS: DT_INST_REG_ADDR(13) -> DT_INST_REG_ADDR_BY_IDX(13, 0) */
 #define DT_INST_REG_ADDR(inst) DT_INST_REG_ADDR_BY_IDX(inst, 0)
 
 /**

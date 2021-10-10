@@ -181,6 +181,7 @@ bool z_device_ready(const struct device *dev)
 		return false;
 	}
 
+    /* LS: @ref z_sys_init_run_level() initialized와 init_res가 준비되는 곳 */
 	return dev->state->initialized && (dev->state->init_res == 0U);
 }
 
