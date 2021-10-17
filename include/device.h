@@ -77,6 +77,13 @@ typedef int16_t device_handle_t;
  *
  * @return The expanded name of the device object created by DEVICE_DEFINE()
  */
+/*
+ * LS:
+ *
+ * DEVICE_NAME_GET(dts_ord_13)
+ * _CONCAT(__device_, dts_ord_13)
+ * __device__dts_ord_13
+ */
 #define DEVICE_NAME_GET(name) _CONCAT(__device_, name)
 
 /**
@@ -259,6 +266,14 @@ typedef int16_t device_handle_t;
  * Z_DEVICE_DT_DEV_NAME(DT_N_S_soc_S_rcc_40021000) -> dts_ord_10
  * DEVICE_NAME_GET(dts_ord_10) -> __device_dts_ord_10
  */
+/*
+ * LS:
+ * DEVICE_DT_NAME_GET(DT_N_S_soc_S_adc_40012400)
+ * DEVICE_DT_NAME_GET(DT_N_S_soc_S_adc_40012400)
+ * DEVICE_NAME_GET(Z_DEVICE_DT_DEV_NAME(DT_N_S_soc_S_adc_40012400))
+ * DEVICE_NAME_GET(_CONCAT(dts_ord_, DT_N_S_soc_S_adc_40012400_ORD))
+ * DEVICE_NAME_GET(dts_ord_13)
+ */
 #define DEVICE_DT_NAME_GET(node_id) DEVICE_NAME_GET(Z_DEVICE_DT_DEV_NAME(node_id))
 
 /**
@@ -274,6 +289,12 @@ typedef int16_t device_handle_t;
  * @return A pointer to the device object created by DEVICE_DT_DEFINE()
  */
 /* LS: node_id = DT_N_S_soc_S_rcc_40021000 (STM32_CLOCK_CONTROL_NODE) @ref stm32_clock_control.h */
+/*
+ * LS:
+ * DEVICE_DT_GET(DT_N_S_soc_S_adc_40012400)
+ * DEVICE_DT_NAME_GET(DT_N_S_soc_S_adc_40012400)
+ *
+ */
 #define DEVICE_DT_GET(node_id) (&DEVICE_DT_NAME_GET(node_id))
 
 /** @def DEVICE_DT_INST_GET
@@ -282,6 +303,14 @@ typedef int16_t device_handle_t;
  *        DT_DRV_COMPAT compatible
  *
  * @param inst instance number
+ */
+/*
+ * LS:
+ *
+ * DEVICE_DT_INST_GET(0)
+ * DEVICE_DT_GET(DT_DRV_INST(0))
+ * DEVICE_DT_GET(DT_N_S_soc_S_adc_40012400)
+ *
  */
 #define DEVICE_DT_INST_GET(inst) DEVICE_DT_GET(DT_DRV_INST(inst))
 

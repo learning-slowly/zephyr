@@ -45,6 +45,12 @@ extern "C" {
  * @param isr_param_p Parameter passed to interrupt service routine.
  * @param flags_p Architecture-specific IRQ configuration flags..
  */
+/*
+ * LS:
+ * 
+ * See ARCH_IRQ_CONNECT in include/arch/arm/aarch32/irq.h
+ *
+ */
 #define IRQ_CONNECT(irq_p, priority_p, isr_p, isr_param_p, flags_p) \
 	ARCH_IRQ_CONNECT(irq_p, priority_p, isr_p, isr_param_p, flags_p)
 

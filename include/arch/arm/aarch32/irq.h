@@ -103,10 +103,37 @@ extern void z_arm_interrupt_init(void);
  * We additionally set the priority in the interrupt controller at
  * runtime.
  */
+/*
+ * LS:
+ *
+ * irq number : 12
+ * irq priority : 0
+ * isr func : adc_stm32_isr
+ * isr_param_p :&(__device_dts_ord_13)
+ * flags_p : 0
+ *
+ */
 #define ARCH_IRQ_CONNECT(irq_p, priority_p, isr_p, isr_param_p, flags_p) \
 { \
+    /*
+     * LS:
+     * 
+     * ZLI 비활성화되어 있고, ZLI 기능을 사용하려고 할 때 Assert 된다.
+     * 
+     * ZLI 관하여:
+     * - ZLI 등록된 IRQ는 인터럽트 락킹에 블록되지 않도록 가장 높은 우선 순위로 설정되어진다.
+     * - 다른 IRQ 들은 ZLI로 등록된 IRQ 보다 더 낮은 우선 순위로 설정되어진다.
+     * - BASEPRI를 지원하는 ARMv7-M 또는 ARM-M mainline 에서만 ZLI를 사용할 수 있다. 
+     *
+     */
 	BUILD_ASSERT(IS_ENABLED(CONFIG_ZERO_LATENCY_IRQS) || !(flags_p & IRQ_ZERO_LATENCY), \
 			"ZLI interrupt registered but feature is disabled"); \
+    /*
+     * LS:
+     *
+     * ._isr_list 인스턴스를 생성하여 .intList 섹션에 넣는다.
+     *
+     */
 	Z_ISR_DECLARE(irq_p, 0, isr_p, isr_param_p); \
 	z_arm_irq_priority_set(irq_p, priority_p, flags_p); \
 }

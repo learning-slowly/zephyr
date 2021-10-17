@@ -1009,6 +1009,18 @@ DEVICE_DT_INST_DEFINE(index,						\
 									\
 static void adc_stm32_cfg_func_##index(void)				\
 {									\
+    /*
+     * LS:
+     *
+     * ADC1 의 인터럽트 핸들러를 등록한다. 
+     *  
+     * irq number : 12
+     * irq priority : 0
+     * isr func : adc_stm32_isr
+     * isr_param_p :&(__device_dts_ord_13)
+     * flags_p : 0
+     *
+     */
 	IRQ_CONNECT(DT_INST_IRQN(index),				\
 		    DT_INST_IRQ(index, priority),			\
 		    adc_stm32_isr, DEVICE_DT_INST_GET(index), 0);	\

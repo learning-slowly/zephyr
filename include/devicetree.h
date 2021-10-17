@@ -2272,6 +2272,22 @@
  * @param cell cell name specifier
  * @return the named value at the specifier given by the index
  */
+/*
+ * LS:
+ * DT_INST_IRQ_BY_IDX(0, 0, irq)
+ * DT_IRQ_BY_IDX(DT_DRV_INST(0), 0, irq)
+ * DT_IRQ_BY_IDX(DT_N_S_soc_S_adc_40012400, 0, irq)
+ * DT_CAT(DT_N_S_soc_S_adc_40012400_IRQ_IDX_0_VAL_irq)
+ * 12
+ *
+ *
+ * DT_INST_IRQ_BY_IDX(0, 0, priority)
+ * DT_IRQ_BY_IDX(DT_DRV_INST(0), 0, priority)
+ * DT_IRQ_BY_IDX(DT_N_S_soc_S_adc_40012400, 0, priority)
+ * DT_CAT(DT_N_S_soc_S_adc_40012400_IRQ_IDX_0_VAL_priority)
+ * 0
+ *
+ */
 #define DT_INST_IRQ_BY_IDX(inst, idx, cell) \
 	DT_IRQ_BY_IDX(DT_DRV_INST(inst), idx, cell)
 
@@ -2290,6 +2306,15 @@
  * @param inst instance number
  * @param cell cell name specifier
  * @return the named value at that index
+ */
+/*
+ * LS:
+ * DT_INST_IRQ(0, irq)
+ * DT_INST_IRQ_BY_IDX(0, 0, irq)
+ *
+ * DT_INST_IRQ(0, priority),
+ * DT_INST_IRQ_BY_IDX(0, 0, priority)
+ *
  */
 #define DT_INST_IRQ(inst, cell) DT_INST_IRQ_BY_IDX(inst, 0, cell)
 
