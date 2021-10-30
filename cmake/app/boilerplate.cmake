@@ -71,6 +71,7 @@ May include isr_tables.c etc."
   )
 set_property(GLOBAL PROPERTY GENERATED_KERNEL_SOURCE_FILES "")
 
+#  LS: app 의 소스코드 / build 디렉토리 경로를 cmake  변수에 설정
 set(APPLICATION_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE PATH "Application Source Directory")
 set(APPLICATION_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} CACHE PATH "Application Binary Directory")
 
@@ -214,8 +215,11 @@ add_custom_target(
   )
 
 # Dummy add to generate files.
+# LS: Zephyr linkerr 스크립트 파일 호출 / TODO: 어떤 역할을 하는지 체크
+# TODO: Zephyr 커널 소스의 CMakeLists.txt 파일을 호출하는지 체크
 zephyr_linker_sources(SECTIONS)
 
+# LS: BOARD_ROOT, SOC_ROOT, ARCH_ROOT 경로지정 (board, Soc, Arch 포팅시 사용)
 # 'BOARD_ROOT' is a prioritized list of directories where boards may
 # be found. It always includes ${ZEPHYR_BASE} at the lowest priority.
 zephyr_file(APPLICATION_ROOT BOARD_ROOT)
@@ -234,6 +238,7 @@ list(APPEND ARCH_ROOT ${ZEPHYR_BASE})
 # Check that BOARD has been provided, and that it has not changed.
 zephyr_check_cache(BOARD REQUIRED)
 
+# LS: board 디렉토리 검색 및 설정
 string(FIND "${BOARD}" "@" REVISION_SEPARATOR_INDEX)
 if(NOT (REVISION_SEPARATOR_INDEX EQUAL -1))
   math(EXPR BOARD_REVISION_INDEX "${REVISION_SEPARATOR_INDEX} + 1")
@@ -434,6 +439,7 @@ endif()
 get_filename_component(BOARD_ARCH_DIR ${BOARD_DIR}      DIRECTORY)
 get_filename_component(ARCH           ${BOARD_ARCH_DIR} NAME)
 
+# LS: Zephyr 소스의 Arch 디렉토리 검색
 foreach(root ${ARCH_ROOT})
   if(EXISTS ${root}/arch/${ARCH}/CMakeLists.txt)
     set(ARCH_DIR ${root}/arch)
@@ -447,6 +453,7 @@ please check your installation. ARCH roots searched: \n\
 ${ARCH_ROOT}")
 endif()
 
+# LS: app 디렉토리의 prj.conf
 if(DEFINED CONF_FILE)
   # This ensures that CACHE{CONF_FILE} will be set correctly to current scope
   # variable CONF_FILE. An already current scope variable will stay the same.
@@ -514,6 +521,7 @@ zephyr_file(CONF_FILES ${APPLICATION_SOURCE_DIR}/boards DTS APP_BOARD_DTS)
 # The CONF_FILE variable is now set to its final value.
 zephyr_boilerplate_watch(CONF_FILE)
 
+# LS: dts 오버레이 파일 검색 및 정의
 if(DTC_OVERLAY_FILE)
   # DTC_OVERLAY_FILE has either been specified on the cmake CLI or is already
   # in the CMakeCache.txt. This has precedence over the environment
@@ -571,6 +579,7 @@ include(${ZEPHYR_BASE}/cmake/generic_toolchain.cmake)
 include(${ZEPHYR_BASE}/cmake/dts.cmake)
 include(${ZEPHYR_BASE}/cmake/kconfig.cmake)
 
+# LS: 해당 보드의 SoC Name Series, Toolchain, Family 값들을 설정
 set(SOC_NAME   ${CONFIG_SOC})
 set(SOC_SERIES ${CONFIG_SOC_SERIES})
 set(SOC_TOOLCHAIN_NAME ${CONFIG_SOC_TOOLCHAIN_NAME})
@@ -582,6 +591,7 @@ else()
   set(SOC_PATH ${SOC_FAMILY}/${SOC_SERIES})
 endif()
 
+# LS 별도 SoC 디렉토리를 검색 
 # Use SOC to search for a 'CMakeLists.txt' file.
 # e.g. zephyr/soc/xtense/intel_apl_adsp/CMakeLists.txt.
 foreach(root ${SOC_ROOT})
@@ -676,6 +686,7 @@ endif()
 #
 # Currently used properties:
 # - COMPILES_OPTIONS: Used by application memory partition feature
+# LS : Compile 옵션 => 애플리케이션 메모리  파티션 관련
 add_custom_target(zephyr_property_target)
 
 # "app" is a CMake library containing all the application code and is

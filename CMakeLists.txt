@@ -63,15 +63,18 @@ set_property(   GLOBAL PROPERTY PROPERTY_OUTPUT_FORMAT elf32-little${ARCH}) # BF
 # including the library named "zephyr" link with this library to
 # obtain these flags.
 # https://cmake.org/cmake/help/latest/manual/cmake-buildsystem.7.html#interface-libraries
+# TODO: LS: zephyr_interface ? 
 add_library(zephyr_interface INTERFACE)
 
 # "zephyr" is a catch-all CMake library for source files that can be
 # built purely with the include paths, defines, and other compiler
 # flags that come with zephyr_interface.
+# LS: Zephyr 소스코드들은 라이브러리 네임이 Zephyr 로 링크됨
 zephyr_library_named(zephyr)
 
 zephyr_include_directories(
   include
+  #LS: app 및의 build 디렉토리의 자동생성된 Header 경로 지정
   ${PROJECT_BINARY_DIR}/include/generated
   ${USERINCLUDE}
   ${STDINCLUDE}
@@ -110,6 +113,7 @@ if(BUILD_VERSION)
   )
 endif()
 
+# LS: Zephyr 커널의 최적화 옵션 변수등을 지정
 # @Intent: Obtain compiler optimizations flags and store in variables
 # @details:
 #   Kconfig.zephyr "Optimization level" is a kconfig choice, ensuring
@@ -237,6 +241,7 @@ zephyr_compile_options(
   $<$<COMPILE_LANGUAGE:ASM>:-D_ASMLANGUAGE>
 )
 
+# LS: Linker script 관련 변수 설정
 # @Intent: Set fundamental linker specific flags
 toolchain_ld_base()
 
@@ -442,6 +447,7 @@ endif()
 # Arch is placed early because it defines important compiler flags
 # that must be exported to external build systems defined in
 # e.g. subsys/.
+# LS: 서브 디렉토리 지정
 add_subdirectory(arch)
 add_subdirectory(lib)
 # We use include instead of add_subdirectory to avoid creating a new directory scope.

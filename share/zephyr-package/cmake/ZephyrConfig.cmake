@@ -9,6 +9,9 @@
 # First check to see if user has provided a Zephyr base manually.
 # Set Zephyr base to environment setting.
 # It will be empty if not set in environment.
+# LS: application CMakeLists.txt 에서 find_package(Zephyr) 를 호출시
+# ~ /.cmake/zephyr/ 아래 파일의 경로에서 ZephyrConfig.cmake 파일을 우선 호출
+#  find_package(name) 함수는 지정된  "nameConfig.cmake" 파일을 호출 
 
 macro(include_boilerplate location)
   if(ZEPHYR_UNITTEST)
@@ -19,6 +22,8 @@ macro(include_boilerplate location)
     set(BOILERPLATE_FILE ${ZEPHYR_BASE}/cmake/app/boilerplate.cmake)
   endif()
 
+  #LS : boilerplate.cmake 스크립트를 호출
+  #Zephyr 문서 참조: https://docs.zephyrproject.rg/latest/guides/zephyr_cmake_package.html?highlight=zeo
   if(NOT NO_BOILERPLATE)
     message("Including boilerplate (${location}): ${BOILERPLATE_FILE}")
     include(${BOILERPLATE_FILE} NO_POLICY_SCOPE)
