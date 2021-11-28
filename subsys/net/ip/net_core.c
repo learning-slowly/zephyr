@@ -387,7 +387,7 @@ static void net_queue_rx(struct net_if *iface, struct net_pkt *pkt)
 #if NET_TC_RX_COUNT > 1
 	NET_DBG("TC %d with prio %d pkt %p", tc, prio, pkt);
 #endif
-
+	/* LS: Traffic class 값이 0 이면 */
 	if (NET_TC_RX_COUNT == 0) {
 		net_process_rx_packet(pkt);
 	} else {

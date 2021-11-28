@@ -3830,7 +3830,8 @@ out:
 
 	return iface;
 }
-
+/* LS: CONFIG_NET_PROMISCUOUS_MODE 가 활성화시 해당 MAC 주소가 아닌 패킷도 
+ * 모두 읽어들임 */
 enum net_verdict net_if_recv_data(struct net_if *iface, struct net_pkt *pkt)
 {
 	if (IS_ENABLED(CONFIG_NET_PROMISCUOUS_MODE) &&

@@ -1136,6 +1136,8 @@ void *net_buf_simple_pull(struct net_buf_simple *buf, size_t len)
 
 	__ASSERT_NO_MSG(buf->len >= len);
 
+	/* LS: buf->len : 남아있는 버퍼의 길이 */
+	/* buf->data 현재 data 포인터 */
 	buf->len -= len;
 	return buf->data += len;
 }

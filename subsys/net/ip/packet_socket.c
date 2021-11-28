@@ -48,6 +48,7 @@ enum net_verdict net_packet_socket_input(struct net_pkt *pkt, uint8_t proto)
 	 * data part to be feed to non raw socket.
 	 */
 
+	/* LS: IPv4 ? IPv6? */
 	orig_family = net_pkt_family(pkt);
 
 	net_pkt_set_family(pkt, AF_PACKET);

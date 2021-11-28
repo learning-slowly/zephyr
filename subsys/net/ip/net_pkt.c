@@ -1527,6 +1527,8 @@ static void pkt_cursor_jump(struct net_pkt *pkt, bool write)
 
 	cursor->buf = cursor->buf->frags;
 	while (cursor->buf) {
+		/* LS: Overwrite 가 true (write: false) cursor->buf->len 이 len 값이됨*/
+		/* Overwrite 가 false 이면 net_buf_max_len 을 호출해서 buffer 길이를 늘림 */
 		const size_t len =
 			write ? net_buf_max_len(cursor->buf) : cursor->buf->len;
 
@@ -1552,7 +1554,8 @@ static void pkt_cursor_advance(struct net_pkt *pkt, bool write)
 	if (!cursor->buf) {
 		return;
 	}
-
+	/* LS : write 가 true(overwrite 가 false ) 이면 최대 담을수 있는 데이터 길이 
+	 *    write 가 false(overwrite 가 true) 이면 현제 buf 의 데이터 길이  */
 	len = write ? net_buf_max_len(cursor->buf) : cursor->buf->len;
 	if ((cursor->pos - cursor->buf->data) == len) {
 		pkt_cursor_jump(pkt, write);
@@ -1589,7 +1592,8 @@ static int net_pkt_cursor_operate(struct net_pkt *pkt,
 
 	while (c_op->buf && length) {
 		size_t d_len, len;
-
+		/* LS : overwrite bit  가 true 이면 false , false 이면 write 값 넘김 */
+		/* write 는 net_pkt_skip 함수에서 true 로 전달 됨 */
 		pkt_cursor_advance(pkt, net_pkt_is_being_overwritten(pkt) ?
 				   false : write);
 		if (c_op->buf == NULL) {
@@ -1645,7 +1649,7 @@ static int net_pkt_cursor_operate(struct net_pkt *pkt,
 int net_pkt_skip(struct net_pkt *pkt, size_t skip)
 {
 	NET_DBG("pkt %p skip %zu", pkt, skip);
-
+	/* LS: cursor 가 skip(cursor_offset) 길이만큼 이동 */
 	return net_pkt_cursor_operate(pkt, NULL, skip, false, true);
 }
 
@@ -1742,7 +1746,7 @@ int net_pkt_copy(struct net_pkt *pkt_dst,
 		if (!len) {
 			break;
 		}
-
+		/* LS: Capture Packet 기능 사용 시, payload 복사 */
 		memcpy(c_dst->pos, c_src->pos, len);
 
 		if (!net_pkt_is_being_overwritten(pkt_dst)) {
@@ -1837,7 +1841,10 @@ struct net_pkt *net_pkt_clone(struct net_pkt *pkt, k_timeout_t timeout)
 
 	net_pkt_cursor_init(clone_pkt);
 
+	/* LS: cursor_offset == 0 : 새 패킷(프레임)  을 수신 
+	 *     cursor_offset != 0 : 기존 패킷(프레임) 존재 */
 	if (cursor_offset) {
+		/* LS: TODO: 기존 패킷이 존재  overwrite ? */
 		net_pkt_set_overwrite(clone_pkt, true);
 		net_pkt_skip(clone_pkt, cursor_offset);
 	}

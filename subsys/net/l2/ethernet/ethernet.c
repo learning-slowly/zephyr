@@ -278,7 +278,7 @@ static enum net_verdict ethernet_recv(struct net_if *iface,
 		return NET_OK;
 	}
 #endif
-
+	/* LS: 자신의 link address 주소가 아닌 packet 은 모두 Drop */
 	if (!net_eth_is_addr_broadcast((struct net_eth_addr *)lladdr->addr) &&
 	    !net_eth_is_addr_multicast((struct net_eth_addr *)lladdr->addr) &&
 	    !net_eth_is_addr_lldp_multicast(
@@ -293,7 +293,7 @@ static enum net_verdict ethernet_recv(struct net_if *iface,
 					   sizeof(struct net_eth_addr))));
 		goto drop;
 	}
-
+	/* LS:  2021.11.28 */
 	net_buf_pull(pkt->frags, hdr_len);
 
 	if (IS_ENABLED(CONFIG_NET_IPV4) && type == NET_ETH_PTYPE_IP &&
